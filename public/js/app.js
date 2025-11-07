@@ -2070,6 +2070,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'ClientShow',
   props: ['client'],
+  mounted: function mounted() {
+    console.log(this.client);
+  },
   data: function data() {
     return {
       currentTab: 'bookings'
@@ -50963,8 +50966,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/arunas/Sites/tech-challenge/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Users/arunas/Sites/tech-challenge/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /Users/nico/github.com/MangoAppsAps/ep-technical-support-challenge/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /Users/nico/github.com/MangoAppsAps/ep-technical-support-challenge/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
