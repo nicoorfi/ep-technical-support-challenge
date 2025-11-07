@@ -33,4 +33,13 @@ class Client extends Model
     {
         return "/clients/" . $this->id;
     }
+
+    public function toArray()
+    {
+        $data = parent::toArray();
+
+        $data['bookings'] = $this->bookings;
+
+        return $data;
+    }
 }
