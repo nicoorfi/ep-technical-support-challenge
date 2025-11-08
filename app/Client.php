@@ -24,6 +24,7 @@ class Client extends Model
 
     protected $appends = [
         'url',
+        'can_be_deleted',
     ];
 
     protected static function booted(): void
@@ -54,6 +55,11 @@ class Client extends Model
     public function getUrlAttribute(): string
     {
         return "/clients/" . $this->id;
+    }
+
+    public function getCanBeDeletedAttribute(): bool
+    {
+        return auth()->check() && auth()->id() === $this->user_id;
     }
 
     public function toArray(): array
