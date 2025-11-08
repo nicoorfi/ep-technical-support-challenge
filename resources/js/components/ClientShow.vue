@@ -110,7 +110,54 @@
                 <div class="bg-white rounded p-4" v-if="currentTab == 'journals'">
                     <h3 class="mb-3">List of client journals</h3>
 
-                    <p>(BONUS) TODO: implement this feature</p>
+                    <!-- Add Journal Form -->
+                    <div class="mb-4">
+                        <div class="form-group">
+                            <textarea
+                                class="form-control"
+                                rows="3"
+                                placeholder="Add a journal entry..."
+                                v-model="newJournalContent"
+                            ></textarea>
+                        </div>
+                        <div class="text-right">
+                            <button
+                                class="btn btn-primary btn-sm"
+                                @click="addJournal"
+                                :disabled="!newJournalContent.trim() || addingJournal"
+                            >
+                                <span v-if="addingJournal">
+                                    <span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span>
+                                    Adding...
+                                </span>
+                                <span v-else>Add Journal Entry</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Journals List -->
+                    <template v-if="client.journals && client.journals.length > 0">
+                        <div v-for="journal in client.journals" :key="journal.id" class="journal-entry mb-3 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <strong>{{ journal.user.name }}</strong>
+                                    <span class="text-muted ml-2">{{ formatDate(journal.created_at) }}</span>
+                                </div>
+                                <button
+                                    v-if="currentUser && journal.user_id === currentUser.id"
+                                    class="btn btn-danger btn-sm"
+                                    @click="deleteJournal(journal)"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                            <p class="mb-0">{{ journal.content }}</p>
+                        </div>
+                    </template>
+
+                    <template v-else>
+                        <p class="text-center text-muted">No journal entries yet.</p>
+                    </template>
                 </div>
             </div>
         </div>
@@ -129,6 +176,8 @@ export default {
         return {
             currentTab: 'bookings',
             bookingFilter: 'upcoming',
+            newJournalContent: '',
+            addingJournal: false,
         }
     },
 
@@ -191,6 +240,58 @@ export default {
 
         deleteBooking(booking) {
             axios.delete(`/bookings/${booking.id}`);
+        },
+
+        async addJournal() {
+            if (!this.newJournalContent.trim() || this.addingJournal) {
+                return;
+            }
+
+            this.addingJournal = true;
+
+            try {
+                const response = await axios.post(`/clients/${this.client.id}/journals`, {
+                    content: this.newJournalContent
+                });
+
+                this.client.journals.unshift(response.data);
+                this.newJournalContent = '';
+            } catch (error) {
+                console.error('Error adding journal:', error);
+                alert('Failed to add journal entry. Please try again.');
+            } finally {
+                this.addingJournal = false;
+            }
+        },
+
+        async deleteJournal(journal) {
+            if (!confirm('Are you sure you want to delete this journal entry?')) {
+                return;
+            }
+
+            try {
+                await axios.delete(`/clients/${this.client.id}/journals/${journal.id}`);
+
+                const index = this.client.journals.findIndex(j => j.id === journal.id);
+                if (index !== -1) {
+                    this.client.journals.splice(index, 1);
+                }
+            } catch (error) {
+                console.error('Error deleting journal:', error);
+                alert('Failed to delete journal entry. Please try again.');
+            }
+        },
+
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString('en-US', options);
         }
     }
 }

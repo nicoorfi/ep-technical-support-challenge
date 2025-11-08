@@ -47,6 +47,11 @@ class Client extends Model
         return $this->hasMany(Booking::class);
     }
 
+    public function journals(): HasMany
+    {
+        return $this->hasMany(Journal::class);
+    }
+
     public function getBookingsCountAttribute(): int
     {
         return $this->bookings->count();
@@ -67,6 +72,7 @@ class Client extends Model
         $data = parent::toArray();
 
         $data['bookings'] = $this->bookings;
+        $data['journals'] = $this->journals()->with('user')->latest()->get();
 
         return $data;
     }

@@ -2106,8 +2106,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -2239,6 +2247,53 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'ClientShow',
@@ -2246,7 +2301,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   data: function data() {
     return {
       currentTab: 'bookings',
-      bookingFilter: 'upcoming'
+      bookingFilter: 'upcoming',
+      newJournalContent: '',
+      addingJournal: false
     };
   },
   computed: {
@@ -2316,7 +2373,117 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.bookingFilter = filter;
     },
     deleteBooking: function deleteBooking(booking) {
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a["delete"]("/bookings/".concat(booking.id));
+      axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/bookings/".concat(booking.id));
+    },
+    addJournal: function addJournal() {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!(!_this.newJournalContent.trim() || _this.addingJournal)) {
+                  _context.next = 2;
+                  break;
+                }
+
+                return _context.abrupt("return");
+
+              case 2:
+                _this.addingJournal = true;
+                _context.prev = 3;
+                _context.next = 6;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/clients/".concat(_this.client.id, "/journals"), {
+                  content: _this.newJournalContent
+                });
+
+              case 6:
+                response = _context.sent;
+
+                _this.client.journals.unshift(response.data);
+
+                _this.newJournalContent = '';
+                _context.next = 15;
+                break;
+
+              case 11:
+                _context.prev = 11;
+                _context.t0 = _context["catch"](3);
+                console.error('Error adding journal:', _context.t0);
+                alert('Failed to add journal entry. Please try again.');
+
+              case 15:
+                _context.prev = 15;
+                _this.addingJournal = false;
+                return _context.finish(15);
+
+              case 18:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[3, 11, 15, 18]]);
+      }))();
+    },
+    deleteJournal: function deleteJournal(journal) {
+      var _this2 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var index;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (confirm('Are you sure you want to delete this journal entry?')) {
+                  _context2.next = 2;
+                  break;
+                }
+
+                return _context2.abrupt("return");
+
+              case 2:
+                _context2.prev = 2;
+                _context2.next = 5;
+                return axios__WEBPACK_IMPORTED_MODULE_1___default.a["delete"]("/clients/".concat(_this2.client.id, "/journals/").concat(journal.id));
+
+              case 5:
+                index = _this2.client.journals.findIndex(function (j) {
+                  return j.id === journal.id;
+                });
+
+                if (index !== -1) {
+                  _this2.client.journals.splice(index, 1);
+                }
+
+                _context2.next = 13;
+                break;
+
+              case 9:
+                _context2.prev = 9;
+                _context2.t0 = _context2["catch"](2);
+                console.error('Error deleting journal:', _context2.t0);
+                alert('Failed to delete journal entry. Please try again.');
+
+              case 13:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, null, [[2, 9]]);
+      }))();
+    },
+    formatDate: function formatDate(dateString) {
+      var date = new Date(dateString);
+      var options = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      return date.toLocaleDateString('en-US', options);
     }
   }
 });
@@ -40267,13 +40434,135 @@ var render = function() {
           : _vm._e(),
         _vm._v(" "),
         _vm.currentTab == "journals"
-          ? _c("div", { staticClass: "bg-white rounded p-4" }, [
-              _c("h3", { staticClass: "mb-3" }, [
-                _vm._v("List of client journals")
-              ]),
-              _vm._v(" "),
-              _c("p", [_vm._v("(BONUS) TODO: implement this feature")])
-            ])
+          ? _c(
+              "div",
+              { staticClass: "bg-white rounded p-4" },
+              [
+                _c("h3", { staticClass: "mb-3" }, [
+                  _vm._v("List of client journals")
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-4" }, [
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("textarea", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.newJournalContent,
+                          expression: "newJournalContent"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: {
+                        rows: "3",
+                        placeholder: "Add a journal entry..."
+                      },
+                      domProps: { value: _vm.newJournalContent },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.newJournalContent = $event.target.value
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "text-right" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary btn-sm",
+                        attrs: {
+                          disabled:
+                            !_vm.newJournalContent.trim() || _vm.addingJournal
+                        },
+                        on: { click: _vm.addJournal }
+                      },
+                      [
+                        _vm.addingJournal
+                          ? _c("span", [
+                              _c("span", {
+                                staticClass:
+                                  "spinner-border spinner-border-sm mr-1",
+                                attrs: { role: "status", "aria-hidden": "true" }
+                              }),
+                              _vm._v(
+                                "\n                                Adding...\n                            "
+                              )
+                            ])
+                          : _c("span", [_vm._v("Add Journal Entry")])
+                      ]
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _vm.client.journals && _vm.client.journals.length > 0
+                  ? _vm._l(_vm.client.journals, function(journal) {
+                      return _c(
+                        "div",
+                        {
+                          key: journal.id,
+                          staticClass: "journal-entry mb-3 p-3 border rounded"
+                        },
+                        [
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "d-flex justify-content-between align-items-start mb-2"
+                            },
+                            [
+                              _c("div", [
+                                _c("strong", [
+                                  _vm._v(_vm._s(journal.user.name))
+                                ]),
+                                _vm._v(" "),
+                                _c("span", { staticClass: "text-muted ml-2" }, [
+                                  _vm._v(
+                                    _vm._s(_vm.formatDate(journal.created_at))
+                                  )
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _vm.currentUser &&
+                              journal.user_id === _vm.currentUser.id
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btn-danger btn-sm",
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.deleteJournal(journal)
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                                Delete\n                            "
+                                      )
+                                    ]
+                                  )
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c("p", { staticClass: "mb-0" }, [
+                            _vm._v(_vm._s(journal.content))
+                          ])
+                        ]
+                      )
+                    })
+                  : [
+                      _c("p", { staticClass: "text-center text-muted" }, [
+                        _vm._v("No journal entries yet.")
+                      ])
+                    ]
+              ],
+              2
+            )
           : _vm._e()
       ])
     ])
