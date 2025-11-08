@@ -1999,6 +1999,55 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2084,12 +2133,75 @@ __webpack_require__.r(__webpack_exports__);
   props: ['client'],
   data: function data() {
     return {
-      currentTab: 'bookings'
+      currentTab: 'bookings',
+      bookingFilter: 'upcoming'
     };
+  },
+  computed: {
+    filteredBookings: function filteredBookings() {
+      if (!this.client.bookings || this.client.bookings.length === 0) {
+        return [];
+      }
+
+      var now = new Date();
+      var filtered = [];
+
+      if (this.bookingFilter === 'upcoming') {
+        filtered = this.client.bookings.filter(function (booking) {
+          return new Date(booking.start) >= now;
+        }); // Sort ascending (soonest first)
+
+        filtered.sort(function (a, b) {
+          return new Date(a.start) - new Date(b.start);
+        });
+      } else if (this.bookingFilter === 'past') {
+        filtered = this.client.bookings.filter(function (booking) {
+          return new Date(booking.start) < now;
+        }); // Sort descending (most recent first)
+
+        filtered.sort(function (a, b) {
+          return new Date(b.start) - new Date(a.start);
+        });
+      } else {
+        // All bookings
+        filtered = _toConsumableArray(this.client.bookings); // Sort ascending
+
+        filtered.sort(function (a, b) {
+          return new Date(a.start) - new Date(b.start);
+        });
+      }
+
+      return filtered;
+    },
+    bookingCounts: function bookingCounts() {
+      if (!this.client.bookings || this.client.bookings.length === 0) {
+        return {
+          allCount: 0,
+          upcomingCount: 0,
+          pastCount: 0
+        };
+      }
+
+      var now = new Date();
+      var upcoming = this.client.bookings.filter(function (booking) {
+        return new Date(booking.start) >= now;
+      });
+      var past = this.client.bookings.filter(function (booking) {
+        return new Date(booking.start) < now;
+      });
+      return {
+        allCount: this.client.bookings.length,
+        upcomingCount: upcoming.length,
+        pastCount: past.length
+      };
+    }
   },
   methods: {
     switchTab: function switchTab(newTab) {
       this.currentTab = newTab;
+    },
+    setBookingFilter: function setBookingFilter(filter) {
+      this.bookingFilter = filter;
     },
     deleteBooking: function deleteBooking(booking) {
       axios__WEBPACK_IMPORTED_MODULE_0___default.a["delete"]("/bookings/".concat(booking.id));
@@ -39769,13 +39881,108 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _vm.client.bookings && _vm.client.bookings.length > 0
+                  ? _c("div", { staticClass: "mb-3" }, [
+                      _c(
+                        "div",
+                        { staticClass: "btn-group", attrs: { role: "group" } },
+                        [
+                          _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-sm",
+                              class:
+                                _vm.bookingFilter === "all"
+                                  ? "btn-primary"
+                                  : "btn-outline-primary",
+                              attrs: { type: "button" },
+                              on: {
+                                click: function($event) {
+                                  return _vm.setBookingFilter("all")
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                            All\n                            "
+                              ),
+                              _c(
+                                "span",
+                                { staticClass: "badge badge-light ml-1" },
+                                [_vm._v(_vm._s(_vm.bookingCounts.allCount))]
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-sm",
+                              class:
+                                _vm.bookingFilter === "upcoming"
+                                  ? "btn-primary"
+                                  : "btn-outline-primary",
+                              attrs: { type: "button" },
+                              on: {
+                                click: function($event) {
+                                  return _vm.setBookingFilter("upcoming")
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                            Upcoming\n                            "
+                              ),
+                              _c(
+                                "span",
+                                { staticClass: "badge badge-light ml-1" },
+                                [
+                                  _vm._v(
+                                    _vm._s(_vm.bookingCounts.upcomingCount)
+                                  )
+                                ]
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-sm",
+                              class:
+                                _vm.bookingFilter === "past"
+                                  ? "btn-primary"
+                                  : "btn-outline-primary",
+                              attrs: { type: "button" },
+                              on: {
+                                click: function($event) {
+                                  return _vm.setBookingFilter("past")
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                            Past\n                            "
+                              ),
+                              _c(
+                                "span",
+                                { staticClass: "badge badge-light ml-1" },
+                                [_vm._v(_vm._s(_vm.bookingCounts.pastCount))]
+                              )
+                            ]
+                          )
+                        ]
+                      )
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.client.bookings && _vm.client.bookings.length > 0
                   ? [
                       _c("table", [
                         _vm._m(0),
                         _vm._v(" "),
                         _c(
                           "tbody",
-                          _vm._l(_vm.client.bookings, function(booking) {
+                          _vm._l(_vm.filteredBookings, function(booking) {
                             return _c("tr", { key: booking.id }, [
                               _c("td", [
                                 _vm._v(
@@ -39805,7 +40012,21 @@ var render = function() {
                           }),
                           0
                         )
-                      ])
+                      ]),
+                      _vm._v(" "),
+                      _vm.filteredBookings.length === 0
+                        ? _c(
+                            "p",
+                            { staticClass: "text-center text-muted mt-3" },
+                            [
+                              _vm._v(
+                                "\n                        No " +
+                                  _vm._s(_vm.bookingFilter) +
+                                  " bookings found.\n                    "
+                              )
+                            ]
+                          )
+                        : _vm._e()
                     ]
                   : [
                       _c("p", { staticClass: "text-center" }, [

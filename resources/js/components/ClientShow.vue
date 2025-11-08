@@ -39,6 +39,39 @@
                 <div class="bg-white rounded p-4" v-if="currentTab == 'bookings'">
                     <h3 class="mb-3">List of client bookings</h3>
 
+                    <!-- Filter Buttons -->
+                    <div class="mb-3" v-if="client.bookings && client.bookings.length > 0">
+                        <div class="btn-group" role="group">
+                            <button
+                                type="button"
+                                class="btn btn-sm"
+                                :class="bookingFilter === 'all' ? 'btn-primary' : 'btn-outline-primary'"
+                                @click="setBookingFilter('all')"
+                            >
+                                All
+                                <span class="badge badge-light ml-1">{{ bookingCounts.allCount }}</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-sm"
+                                :class="bookingFilter === 'upcoming' ? 'btn-primary' : 'btn-outline-primary'"
+                                @click="setBookingFilter('upcoming')"
+                            >
+                                Upcoming
+                                <span class="badge badge-light ml-1">{{ bookingCounts.upcomingCount }}</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-sm"
+                                :class="bookingFilter === 'past' ? 'btn-primary' : 'btn-outline-primary'"
+                                @click="setBookingFilter('past')"
+                            >
+                                Past
+                                <span class="badge badge-light ml-1">{{ bookingCounts.pastCount }}</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <template v-if="client.bookings && client.bookings.length > 0">
                         <table>
                             <thead>
@@ -49,7 +82,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="booking in client.bookings" :key="booking.id">
+                                <tr v-for="booking in filteredBookings" :key="booking.id">
                                     <td>{{ booking.start }} - {{ booking.end }}</td>
                                     <td>{{ booking.notes }}</td>
                                     <td>
@@ -58,6 +91,10 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                        <p v-if="filteredBookings.length === 0" class="text-center text-muted mt-3">
+                            No {{ bookingFilter }} bookings found.
+                        </p>
                     </template>
 
                     <template v-else>
@@ -88,12 +125,65 @@ export default {
     data() {
         return {
             currentTab: 'bookings',
+            bookingFilter: 'upcoming',
+        }
+    },
+
+    computed: {
+        filteredBookings() {
+            if (!this.client.bookings || this.client.bookings.length === 0) {
+                return [];
+            }
+
+            const now = new Date();
+            let filtered = [];
+
+            if (this.bookingFilter === 'upcoming') {
+                filtered = this.client.bookings.filter(booking => new Date(booking.start) >= now);
+                // Sort ascending (soonest first)
+                filtered.sort((a, b) => new Date(a.start) - new Date(b.start));
+            } else if (this.bookingFilter === 'past') {
+                filtered = this.client.bookings.filter(booking => new Date(booking.start) < now);
+                // Sort descending (most recent first)
+                filtered.sort((a, b) => new Date(b.start) - new Date(a.start));
+            } else {
+                // All bookings
+                filtered = [...this.client.bookings];
+                // Sort ascending
+                filtered.sort((a, b) => new Date(a.start) - new Date(b.start));
+            }
+
+            return filtered;
+        },
+
+        bookingCounts() {
+            if (!this.client.bookings || this.client.bookings.length === 0) {
+                return {
+                    allCount: 0,
+                    upcomingCount: 0,
+                    pastCount: 0
+                };
+            }
+
+            const now = new Date();
+            const upcoming = this.client.bookings.filter(booking => new Date(booking.start) >= now);
+            const past = this.client.bookings.filter(booking => new Date(booking.start) < now);
+
+            return {
+                allCount: this.client.bookings.length,
+                upcomingCount: upcoming.length,
+                pastCount: past.length
+            };
         }
     },
 
     methods: {
         switchTab(newTab) {
             this.currentTab = newTab;
+        },
+
+        setBookingFilter(filter) {
+            this.bookingFilter = filter;
         },
 
         deleteBooking(booking) {
