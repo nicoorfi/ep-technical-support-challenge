@@ -1,6 +1,9 @@
 <template>
     <div>
-        <h1 class="mb-6">Clients -> {{ client.name }}</h1>
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="mb-0">Clients -> {{ client.name }}</h1>
+            <a :href="`/clients/${client.id}/edit`" class="btn btn-primary">Edit Client</a>
+        </div>
 
         <div class="flex">
             <div class="w-1/3 mr-5">

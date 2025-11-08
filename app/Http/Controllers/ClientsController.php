@@ -66,6 +66,32 @@ class ClientsController extends Controller
         return $client;
     }
 
+    public function edit($client): View
+    {
+        $client = Client::where('id', $client)->first();
+
+        $this->authorize('update', $client);
+
+        return view('clients.edit', ['client' => $client]);
+    }
+
+    public function update(Request $request, $client): Client
+    {
+        $client = Client::where('id', $client)->first();
+
+        $this->authorize('update', $client);
+
+        $client->name = $request->get('name');
+        $client->email = $request->get('email');
+        $client->phone = $request->get('phone');
+        $client->address = $request->get('address');
+        $client->city = $request->get('city');
+        $client->postcode = $request->get('postcode');
+        $client->save();
+
+        return $client;
+    }
+
     public function destroy($client): string
     {
         $client = Client::where('id', $client)->first();

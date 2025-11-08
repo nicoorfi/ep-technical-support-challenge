@@ -26,6 +26,8 @@ Route::group(['middleware' => 'auth', 'prefix' => 'clients'], function () {
     Route::get('/create', 'ClientsController@create');
     Route::post('/', 'ClientsController@store');
     Route::get('/{client}', 'ClientsController@show');
+    Route::get('/{client}/edit', 'ClientsController@edit');
+    Route::put('/{client}', 'ClientsController@update');
     Route::delete('/{client}', 'ClientsController@destroy');
 
     Route::get('/{client}/journals', 'JournalsController@index');
