@@ -43,29 +43,34 @@ class AddUserRelationshipsToClients extends Migration
         $allUsers = $existingUsers->merge($dummyUsers)->unique('id');
         $userIds = $allUsers->pluck('id')->all();
 
-        // Randomly assign existing clients to users as owners
-        collect(DB::table('clients')->get())->each(function ($client) use ($userIds) {
-            DB::table('clients')
-                ->where('id', $client->id)
-                ->update(['user_id' => $userIds[array_rand($userIds)]]);
-        });
-
-        // Make user_id not nullable
-        DB::statement('ALTER TABLE clients ALTER COLUMN user_id SET NOT NULL');
-
-        // Randomly assign clients to users (each user gets 5-7 assigned clients)
+        // Randomly assign existing clients to users as owners (only if clients exist)
         $allClients = collect(DB::table('clients')->get());
 
-        $allUsers->each(function ($user) use ($allClients) {
-            $numAssignments = rand(5, min(7, $allClients->count()));
+        if ($allClients->isNotEmpty()) {
 
-            $allClients->random($numAssignments)->each(fn ($client) => DB::table('client_user')->insert([
-                'client_id' => $client->id,
-                'user_id' => $user->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]));
-        });
+            $allClients->each(function ($client) use ($userIds) {
+                DB::table('clients')
+                    ->where('id', $client->id)
+                    ->update(['user_id' => $userIds[array_rand($userIds)]]);
+            });
+
+            // Make user_id not nullable
+            DB::statement('ALTER TABLE clients ALTER COLUMN user_id SET NOT NULL');
+
+            // Randomly assign clients to users (each user gets 5-7 assigned clients)
+            $allUsers->each(function ($user) use ($allClients) {
+                $numAssignments = rand(5, min(7, $allClients->count()));
+
+                if ($numAssignments > 0) {
+                    $allClients->random($numAssignments)->each(fn ($client) => DB::table('client_user')->insert([
+                        'client_id' => $client->id,
+                        'user_id' => $user->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]));
+                }
+            });
+        }
     }
 
     /**
