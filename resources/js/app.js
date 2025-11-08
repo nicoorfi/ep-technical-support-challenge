@@ -25,6 +25,17 @@ Vue.component('client-form', require('./components/ClientForm.vue').default);
 Vue.component('client-show', require('./components/ClientShow.vue').default);
 
 /**
+ * Make current user globally available to all components
+ */
+Vue.mixin({
+    computed: {
+        currentUser() {
+            return window.currentUser;
+        }
+    }
+});
+
+/**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
