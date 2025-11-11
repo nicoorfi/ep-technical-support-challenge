@@ -9,6 +9,11 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
+    <!-- Current User -->
+    <script>
+        window.currentUser = @json(auth()->user());
+    </script>
+
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 
